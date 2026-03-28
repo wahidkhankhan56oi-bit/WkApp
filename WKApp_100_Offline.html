@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WK App</title>
+<style>
+  
+
+  :root {
+    --primary: #0a1628;
+    --secondary: #0d2137;
+    --accent1: #00c6ff;
+    --accent2: #f7971e;
+    --accent3: #12c2e9;
+    --gold: #ffd700;
+    --text: #e8f4fd;
+    --card: rgba(13,33,55,0.95);
+    --glow: 0 0 20px rgba(0,198,255,0.4);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, 'Arial Unicode MS', Arial, sans-serif;
+    background: var(--primary);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* SPLASH SCREEN */
+  #splash {
+    position: fixed; inset: 0; z-index: 9999;
+    background: linear-gradient(135deg, #020b18 0%, #0a1628 40%, #0d2a4a 100%);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    animation: splashOut 0.8s ease 3.5s forwards;
+  }
+
+  @keyframes splashOut {
+    to { opacity: 0; pointer-events: none; }
+  }
+
+  .splash-circles {
+    position: absolute; inset: 0; overflow: hidden;
+  }
+
+  .circle {
+    position: absolute; border-radius: 50%;
+    border: 1px solid rgba(0,198,255,0.15);
+    animation: pulse 3s ease-in-out infinite;
+  }
+
+  .circle:nth-child(1) { width:300px; height:300px; top:50%; left:50%; transform:translate(-50%,-50%); animation-delay:0s; }
+  .circle:nth-child(2) { width:500px; height:500px; top:50%; left:50%; transform:translate(-50%,-50%); animation-delay:0.5s; }
+  .circle:nth-child(3) { width:700px; height:700px; top:50%; left:50%; transform:translate(-50%,-50%); animation-delay:1s; }
+
+  @keyframes pulse {
+    0%,100% { opacity:0.3; transform:translate(-50%,-50%) scale(1); }
+    50% { opacity:0.7; transform:translate(-50%,-50%) scale(1.05); }
+  }
+
+  .splash-logo {
+    width: 120px; height: 120px;
+    background: linear-gradient(135deg, #00c6ff, #f7971e);
+    border-radius: 28px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    font-size: 36px; font-weight: 900;
+    color: white;
+    box-shadow: 0 0 40px rgba(0,198,255,0.5), 0 0 80px rgba(247,151,30,0.3);
+    animation: logoAnim 1s ease 0.3s both;
+    margin-bottom: 20px;
+    position: relative; z-index: 1;
+  }
+
+  @keyframes logoAnim {
+    from { transform: scale(0) rotate(-180deg); opacity: 0; }
+    to { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  .splash-developer {
+    display: flex; align-items: center; gap: 15px;
+    animation: fadeUp 0.8s ease 1s both;
+    position: relative; z-index: 1;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(0,198,255,0.2);
+    border-radius: 50px;
+    padding: 10px 20px;
+    backdrop-filter: blur(10px);
+    margin-top: 20px;
+  }
+
+  .dev-photo {
+    width: 55px; height: 55px; border-radius: 50%;
+    border: 2px solid var(--accent1);
+    object-fit: cover;
+    box-shadow: 0 0 15px rgba(0,198,255,0.4);
+  }
+
+  .dev-info h3 {
+    font-size: 14px; font-weight: 700;
+    background: linear-gradient(90deg, #00c6ff, #f7971e);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  .dev-info p { font-size: 11px; color: rgba(255,255,255,0.5); }
+
+  .splash-title {
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    font-size: 28px; font-weight: 900;
+    background: linear-gradient(90deg, #00c6ff, #f7971e);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    animation: fadeUp 0.8s ease 0.6s both;
+    position: relative; z-index: 1;
+    letter-spacing: 4px;
+  }
+
+  .splash-sub {
+    font-size: 13px; color: rgba(255,255,255,0.5);
+    animation: fadeUp 0.8s ease 0.9s both;
+    position: relative; z-index: 1;
+    margin-top: 8px;
+  }
+
+  .loading-bar {
+    width: 200px; height: 3px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    margin-top: 30px;
+    position: relative; z-index: 1;
+    overflow: hidden;
+    animation: fadeUp 0.8s ease 1.2s both;
+  }
+
+  .loading-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00c6ff, #f7971e);
+    border-radius: 10px;
+    animation: load 2.5s ease 1.5s both;
+  }
+
+  @keyframes load {
+    from { width: 0%; }
+    to { width: 100%; }
+  }
+
+  @keyframes fadeUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  /* MAIN APP */
+  #app {
+    opacity: 0;
+    animation: appIn 0.8s ease 4.2s forwards;
+    min-height: 100vh;
+  }
+
+  @keyframes appIn {
+    to { opacity: 1; }
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, #020b18, #0a1628);
+    border-bottom: 1px solid rgba(0,198,255,0.2);
+    padding: 15px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(20px);
+  }
+
+  .header-logo {
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  .header-logo-icon {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, #00c6ff, #f7971e);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    font-size: 14px; font-weight: 900; color: white;
+  }
+
+  .header-title {
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    font-size: 18px; font-weight: 900;
+    background: linear-gradient(90deg, #00c6ff, #f7971e);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  .lang-selector {
+    display: flex; gap: 5px;
+  }
+
+  .lang-btn {
+    padding: 5px 10px; border-radius: 20px;
+    border: 1px solid rgba(0,198,255,0.3);
+    background: transparent; color: rgba(255,255,255,0.6);
+    font-size: 11px; cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .lang-btn.active, .lang-btn:hover {
+    background: linear-gradient(135deg, #00c6ff, #0080aa);
+    color: white; border-color: transparent;
+    box-shadow: 0 0 10px rgba(0,198,255,0.3);
+  }
+
+  /* BOTTOM NAV */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(135deg, #020b18, #0a1628);
+    border-top: 1px solid rgba(0,198,255,0.2);
+    display: flex; z-index: 100;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .nav-item {
+    flex: 1; padding: 12px 5px 8px;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 4px;
+    cursor: pointer; transition: all 0.3s;
+    color: rgba(255,255,255,0.4);
+    font-size: 10px;
+    border: none; background: transparent;
+  }
+
+  .nav-item.active, .nav-item:hover {
+    color: var(--accent1);
+  }
+
+  .nav-item svg { width: 22px; height: 22px; }
+
+  .nav-item.active svg { filter: drop-shadow(0 0 5px var(--accent1)); }
+
+  /* MAIN CONTENT */
+  .main { padding: 20px 15px 80px; }
+
+  /* SCREENS */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* HOME SCREEN */
+  .welcome-card {
+    background: linear-gradient(135deg, rgba(0,198,255,0.15), rgba(247,151,30,0.1));
+    border: 1px solid rgba(0,198,255,0.2);
+    border-radius: 20px; padding: 20px;
+    margin-bottom: 20px;
+    position: relative; overflow: hidden;
+  }
+
+  .welcome-card::before {
+    content: '';
+    position: absolute; top: -50%; right: -20%;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(0,198,255,0.1), transparent 70%);
+    border-radius: 50%;
+  }
+
+  .welcome-text h2 {
+    font-size: 20px; font-weight: 700;
+    background: linear-gradient(90deg, #00c6ff, #f7971e);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 5px;
+  }
+
+  .welcome-text p { font-size: 13px; color: rgba(255,255,255,0.6); }
+
+  .dev-badge {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 15px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 50px; padding: 8px 15px;
+    width: fit-content;
+  }
+
+  .dev-badge img {
+    width: 35px; height: 35px; border-radius: 50%;
+    border: 2px solid var(--accent1);
+  }
+
+  .dev-badge span {
+    font-size: 12px;
+    background: linear-gradient(90deg, #00c6ff, #f7971e);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    font-weight: 700;
+  }
+
+  /* STATS */
+  .stats-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 12px; margin-bottom: 20px;
+  }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid rgba(0,198,255,0.15);
+    border-radius: 16px; padding: 15px;
+    text-align: center;
+  }
+
+  .stat-number {
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    font-size: 24px; font-weight: 900;
+    background: linear-gradient(90deg, #00c6ff, #f7971e);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  .stat-label { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 3px; }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-size: 16px; font-weight: 700;
+    color: var(--accent1); margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .section-title::before {
+    content: '';
+    width: 4px; height: 18px;
+    background: linear-gradient(180deg, #00c6ff, #f7971e);
+    border-radius: 2px;
+  }
+
+  /* COURSE CARDS */
+  .course-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 12px; margin-bottom: 20px;
+  }
+
+  .course-card {
+    background: var(--card);
+    border: 1px solid rgba(0,198,255,0.15);
+    border-radius: 16px; padding: 15px;
+    cursor: pointer; transition: all 0.3s;
+    position: relative; overflow: hidden;
+  }
+
+  .course-card:hover, .course-card:active {
+    transform: translateY(-3px);
+    border-color: var(--accent1);
+    box-shadow: var(--glow);
+  }
+
+  .course-icon {
+    font-size: 32px; margin-bottom: 10px;
+    display: block;
+  }
+
+  .course-title {
+    font-size: 13px; font-weight: 700;
+    color: var(--text); margin-bottom: 4px;
+  }
+
+  .course-lessons {
+    font-size: 10px; color: rgba(255,255,255,0.4);
+  }
+
+  .course-progress {
+    height: 3px; background: rgba(255,255,255,0.1);
+    border-radius: 10px; margin-top: 10px; overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00c6ff, #f7971e);
+    border-radius: 10px;
+    transition: width 0.5s;
+  }
+
+  /* LESSONS SCREEN */
+  .back-btn {
+    display: flex; align-items: center; gap: 8px;
+    color: var(--accent1); font-size: 14px;
+    cursor: pointer; margin-bottom: 20px;
+    background: none; border: none;
+    padding: 0;
+  }
+
+  .lesson-card {
+    background: var(--card);
+    border: 1px solid rgba(0,198,255,0.15);
+    border-radius: 16px; padding: 18px;
+    margin-bottom: 12px;
+    cursor: pointer; transition: all 0.3s;
+    display: flex; align-items: center; gap: 15px;
+  }
+
+  .lesson-card:hover { border-color: var(--accent1); box-shadow: var(--glow); }
+
+  .lesson-num {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, rgba(0,198,255,0.2), rgba(247,151,30,0.2));
+    border: 1px solid rgba(0,198,255,0.3);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    font-size: 14px; font-weight: 700;
+    color: var(--accent1);
+    flex-shrink: 0;
+  }
+
+  .lesson-info h4 { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+  .lesson-info p { font-size: 11px; color: rgba(255,255,255,0.5); }
+
+  .lesson-badge {
+    margin-left: auto;
+    padding: 4px 10px; border-radius: 20px;
+    font-size: 10px; font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .badge-free { background: rgba(0,198,255,0.2); color: var(--accent1); border: 1px solid rgba(0,198,255,0.3); }
+  .badge-locked { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.1); }
+  .badge-done { background: rgba(39,174,96,0.2); color: #27ae60; border: 1px solid rgba(39,174,96,0.3); }
+
+  /* LESSON CONTENT */
+  .lesson-content {
+    background: var(--card);
+    border: 1px solid rgba(0,198,255,0.15);
+    border-radius: 20px; padding: 20px;
+    margin-bottom: 15px;
+  }
+
+  .lesson-content h3 {
+    font-size: 18px; font-weight: 700;
+    background: linear-gradient(90deg, #00c6ff, #f7971e);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 15px;
+  }
+
+  .lesson-content p {
+    font-size: 14px; line-height: 1.8;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 12px;
+  }
+
+  .lesson-image {
+    width: 100%; border-radius: 12px;
+    margin: 15px 0;
+    background: linear-gradient(135deg, rgba(0,198,255,0.1), rgba(247,151,30,0.1));
+    border: 1px solid rgba(0,198,255,0.2);
+    height: 160px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 50px;
+  }
+
+  .highlight-box {
+    background: rgba(0,198,255,0.08);
+    border-left: 3px solid var(--accent1);
+    border-radius: 0 12px 12px 0;
+    padding: 12px 15px;
+    margin: 10px 0;
+    font-size: 13px;
+    color: rgba(255,255,255,0.8);
+  }
+
+  /* QUIZ SCREEN */
+  .quiz-header {
+    background: linear-gradient(135deg, rgba(247,151,30,0.15), rgba(0,198,255,0.1));
+    border: 1px solid rgba(247,151,30,0.2);
+    border-radius: 20px; padding: 20px;
+    margin-bottom: 20px; text-align: center;
+  }
+
+  .quiz-header h2 {
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    font-size: 20px; font-weight: 900;
+    background: linear-gradient(90deg, #f7971e, #00c6ff);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  .quiz-progress-bar {
+    height: 6px; background: rgba(255,255,255,0.1);
+    border-radius: 10px; margin: 15px 0; overflow: hidden;
+  }
+
+  .quiz-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #f7971e, #00c6ff);
+    border-radius: 10px; transition: width 0.5s;
+  }
+
+  .question-card {
+    background: var(--card);
+    border: 1px solid rgba(0,198,255,0.15);
+    border-radius: 20px; padding: 20px;
+    margin-bottom: 15px;
+  }
+
+  .question-text {
+    font-size: 16px; font-weight: 600;
+    color: var(--text); margin-bottom: 20px;
+    line-height: 1.6;
+  }
+
+  .option-btn {
+    width: 100%; padding: 14px 18px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px; color: var(--text);
+    font-size: 14px; font-family: 'Segoe UI', Tahoma, 'Arial Unicode MS', Arial, sans-serif;
+    cursor: pointer; transition: all 0.3s;
+    text-align: left; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  .option-letter {
+    width: 30px; height: 30px;
+    background: rgba(0,198,255,0.1);
+    border: 1px solid rgba(0,198,255,0.3);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: var(--accent1);
+    flex-shrink: 0;
+  }
+
+  .option-btn:hover { border-color: var(--accent1); background: rgba(0,198,255,0.08); }
+  .option-btn.correct { border-color: #27ae60; background: rgba(39,174,96,0.15); }
+  .option-btn.wrong { border-color: #e74c3c; background: rgba(231,76,60,0.15); }
+
+  /* TYPING SCREEN */
+  .typing-category {
+    background: var(--card);
+    border: 1px solid rgba(0,198,255,0.15);
+    border-radius: 16px; padding: 18px;
+    margin-bottom: 12px;
+    cursor: pointer; transition: all 0.3s;
+    display: flex; align-items: center; gap: 15px;
+  }
+
+  .typing-category:hover { border-color: var(--accent1); box-shadow: var(--glow); }
+
+  .typing-icon {
+    width: 50px; height: 50px;
+    background: linear-gradient(135deg, rgba(0,198,255,0.2), rgba(247,151,30,0.2));
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; flex-shrink: 0;
+  }
+
+  /* RESULT SCREEN */
+  .result-card {
+    background: var(--card);
+    border: 1px solid rgba(0,198,255,0.2);
+    border-radius: 24px; padding: 30px;
+    text-align: center; margin-bottom: 20px;
+  }
+
+  .result-score {
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    font-size: 60px; font-weight: 900;
+    background: linear-gradient(90deg, #00c6ff, #f7971e);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    line-height: 1;
+  }
+
+  .result-status {
+    font-size: 22px; font-weight: 700;
+    margin: 15px 0;
+  }
+
+  .result-status.pass { color: #27ae60; }
+  .result-status.fail { color: #e74c3c; }
+
+  .primary-btn {
+    width: 100%; padding: 16px;
+    background: linear-gradient(135deg, #00c6ff, #0080aa);
+    border: none; border-radius: 14px;
+    color: white; font-size: 16px; font-weight: 700;
+    font-family: 'Segoe UI', Tahoma, 'Arial Unicode MS', Arial, sans-serif;
+    cursor: pointer; transition: all 0.3s;
+    box-shadow: 0 4px 20px rgba(0,198,255,0.3);
+  }
+
+  .primary-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(0,198,255,0.4); }
+
+  .secondary-btn {
+    width: 100%; padding: 14px;
+    background: transparent;
+    border: 1px solid rgba(0,198,255,0.3);
+    border-radius: 14px; color: var(--accent1);
+    font-size: 15px; font-weight: 600;
+    font-family: 'Segoe UI', Tahoma, 'Arial Unicode MS', Arial, sans-serif;
+    cursor: pointer; transition: all 0.3s;
+    margin-top: 10px;
+  }
+
+  /* ANIMATIONS */
+  .fade-in { animation: fadeIn 0.5s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--primary); }
+  ::-webkit-scrollbar-thumb { background: rgba(0,198,255,0.3); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-circles">
+    <div class="circle"></div>
+    <div class="circle"></div>
+    <div class="circle"></div>
+  </div>
+  <div class="splash-logo">WK</div>
+  <div class="splash-title">WK APP</div>
+  <div class="splash-sub">Computer Learning Platform</div>
+  <div class="splash-developer">
+    <img src="data:image/jpeg;base64,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" class="dev-photo" onerror="this.style.background='linear-gradient(135deg,#00c6ff,#f7971e)';this.src=''" alt="Developer">
+    <div class="dev-info">
+      <h3>Abdul Wahid Alizai</h3>
+      <p>Developer & Instructor</p>
+    </div>
+  </div>
+  <div class="loading-bar"><div class="loading-fill"></div></div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-logo">
+      <div class="header-logo-icon">WK</div>
+      <span class="header-title">WK APP</span>
+    </div>
+    <div class="lang-selector">
+      <button class="lang-btn active" onclick="setLang('ps')">پښتو</button>
+      <button class="lang-btn" onclick="setLang('dr')">دری</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="main">
+
+    <!-- HOME SCREEN -->
+    <div id="home-screen" class="screen active fade-in">
+      <div class="welcome-card">
+        <div class="welcome-text">
+          <h2 id="welcome-title">ښه راغلاست!</h2>
+          <p id="welcome-sub">د کمپیوټر زده کړه - بیسک څخه ایډوانس پورې</p>
+        </div>
+        <div class="dev-badge">
+          <img src="data:image/jpeg;base64,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" onerror="this.style.background='linear-gradient(135deg,#00c6ff,#f7971e)'" alt="Dev">
+          <span>Abdul Wahid Alizai</span>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">8</div>
+          <div class="stat-label" id="stat1-label">کورسونه</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">50+</div>
+          <div class="stat-label" id="stat2-label">لیسنونه</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">3</div>
+          <div class="stat-label" id="stat3-label">ژبې</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">100%</div>
+          <div class="stat-label" id="stat4-label">آفلاین</div>
+        </div>
+      </div>
+
+      <div class="section-title" id="courses-title">کورسونه</div>
+      <div class="course-grid">
+        <div class="course-card" onclick="showCourses('hardware')">
+          <span class="course-icon">🖥️</span>
+          <div class="course-title" id="hw-title">هارډویر</div>
+          <div class="course-lessons">12 lessons</div>
+          <div class="course-progress"><div class="progress-fill" style="width:30%"></div></div>
+        </div>
+        <div class="course-card" onclick="showCourses('software')">
+          <span class="course-icon">💾</span>
+          <div class="course-title" id="sw-title">سافټویر</div>
+          <div class="course-lessons">10 lessons</div>
+          <div class="course-progress"><div class="progress-fill" style="width:0%"></div></div>
+        </div>
+        <div class="course-card" onclick="showCourses('network')">
+          <span class="course-icon">🌐</span>
+          <div class="course-title" id="net-title">نیټورک</div>
+          <div class="course-lessons">8 lessons</div>
+          <div class="course-progress"><div class="progress-fill" style="width:0%"></div></div>
+        </div>
+        <div class="course-card" onclick="showCourses('office')">
+          <span class="course-icon">📊</span>
+          <div class="course-title" id="off-title">MS آفس</div>
+          <div class="course-lessons">15 lessons</div>
+          <div class="course-progress"><div class="progress-fill" style="width:0%"></div></div>
+        </div>
+        <div class="course-card" onclick="showCourses('windows')">
+          <span class="course-icon">🪟</span>
+          <div class="course-title">ویندوز</div>
+          <div class="course-lessons">8 lessons</div>
+          <div class="course-progress"><div class="progress-fill" style="width:0%"></div></div>
+        </div>
+        <div class="course-card" onclick="showCourses('internet')">
+          <span class="course-icon">📡</span>
+          <div class="course-title">انټرنیټ</div>
+          <div class="course-lessons">6 lessons</div>
+          <div class="course-progress"><div class="progress-fill" style="width:0%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COURSES LIST SCREEN -->
+    <div id="courses-screen" class="screen fade-in">
+      <button class="back-btn" onclick="goBack()">
+        ← <span id="back-text">شاته</span>
+      </button>
+      <div class="section-title" id="course-screen-title">هارډویر کورس</div>
+      <div id="lessons-list"></div>
+    </div>
+
+    <!-- LESSON DETAIL SCREEN -->
+    <div id="lesson-screen" class="screen fade-in">
+      <button class="back-btn" onclick="backToLessons()">← <span id="back-text2">شاته</span></button>
+      <div id="lesson-detail-content"></div>
+      <button class="primary-btn" onclick="showQuiz()" id="start-quiz-btn">
+        <span id="quiz-btn-text">کوئز شروع کړئ</span>
+      </button>
+    </div>
+
+    <!-- QUIZ SCREEN -->
+    <div id="quiz-screen" class="screen fade-in">
+      <div class="quiz-header">
+        <h2 id="quiz-title">کوئز</h2>
+        <div style="font-size:13px; color:rgba(255,255,255,0.5); margin-top:5px;" id="quiz-counter">پوښتنه 1 / 10</div>
+        <div class="quiz-progress-bar"><div class="quiz-fill" id="quiz-progress" style="width:10%"></div></div>
+      </div>
+      <div id="quiz-content"></div>
+    </div>
+
+    <!-- RESULT SCREEN -->
+    <div id="result-screen" class="screen fade-in">
+      <div class="result-card">
+        <div style="font-size:50px; margin-bottom:10px;" id="result-emoji">🎉</div>
+        <div class="result-score" id="result-score">7/10</div>
+        <div class="result-status pass" id="result-status">پاس! 🎊</div>
+        <p style="font-size:14px; color:rgba(255,255,255,0.6); margin:10px 0;" id="result-msg">ماشا الله! تاسو بریالي شوئ</p>
+      </div>
+      <button class="primary-btn" onclick="nextLesson()" id="next-lesson-btn">
+        <span id="next-btn-text">بل لیسن</span> →
+      </button>
+      <button class="secondary-btn" onclick="retryQuiz()" id="retry-btn">
+        <span id="retry-text">بیا هڅه وکړئ</span>
+      </button>
+    </div>
+
+    <!-- TYPING SCREEN -->
+    <div id="typing-screen" class="screen fade-in">
+      <div class="welcome-card">
+        <div class="welcome-text">
+          <h2 id="typing-title">ټایپنګ ټیپس</h2>
+          <p id="typing-sub">پښتو، دری او انګلیسي ټایپنګ زده کړئ</p>
+        </div>
+      </div>
+      <div class="typing-category" onclick="showTypingLesson('pashto')">
+        <div class="typing-icon">🔤</div>
+        <div>
+          <div style="font-size:15px; font-weight:700;" id="ps-typing">پښتو ټایپنګ</div>
+          <div style="font-size:12px; color:rgba(255,255,255,0.5);" id="ps-typing-sub">د پښتو کیبورډ کارول</div>
+        </div>
+      </div>
+      <div class="typing-category" onclick="showTypingLesson('dari')">
+        <div class="typing-icon">📝</div>
+        <div>
+          <div style="font-size:15px; font-weight:700;" id="dr-typing">دری ټایپنګ</div>
+          <div style="font-size:12px; color:rgba(255,255,255,0.5);" id="dr-typing-sub">د دری کیبورډ کارول</div>
+        </div>
+      </div>
+      <div class="typing-category" onclick="showTypingLesson('english')">
+        <div class="typing-icon">⌨️</div>
+        <div>
+          <div style="font-size:15px; font-weight:700;" id="en-typing">English Typing</div>
+          <div style="font-size:12px; color:rgba(255,255,255,0.5);">Touch typing method</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABOUT SCREEN -->
+    <div id="about-screen" class="screen fade-in">
+      <div style="text-align:center; padding: 30px 20px;">
+        <img src="data:image/jpeg;base64,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" style="width:100px; height:100px; border-radius:50%; border:3px solid #00c6ff; margin:0 auto 20px; display:block; object-fit:cover; box-shadow:0 0 30px rgba(0,198,255,0.4);" alt="Abdul Wahid Alizai">
+        <h2 style="font-family:'Segoe UI',sans-serif; font-size:20px; background:linear-gradient(90deg,#00c6ff,#f7971e); -webkit-background-clip:text; -webkit-text-fill-color:transparent;" id="dev-name">Abdul Wahid Alizai</h2>
+        <p style="font-size:13px; color:rgba(255,255,255,0.5); margin:5px 0 20px;" id="dev-role">Developer & Computer Instructor</p>
+
+        <div style="background:var(--card); border:1px solid rgba(0,198,255,0.15); border-radius:20px; padding:20px; text-align:right;">
+          <div style="margin-bottom:15px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:15px;">
+            <div style="font-size:12px; color:rgba(255,255,255,0.4);" id="app-version-label">د اپلیکیشن نسخه</div>
+            <div style="font-size:16px; font-weight:700; color:var(--accent1);">WK App v1.0</div>
+          </div>
+          <div style="margin-bottom:15px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:15px;">
+            <div style="font-size:12px; color:rgba(255,255,255,0.4);" id="total-courses-label">ټول کورسونه</div>
+            <div style="font-size:16px; font-weight:700; color:var(--accent2);">8 Courses</div>
+          </div>
+          <div>
+            <div style="font-size:12px; color:rgba(255,255,255,0.4);" id="offline-label">آفلاین موډ</div>
+            <div style="font-size:16px; font-weight:700; color:#27ae60;">✅ فعال</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <button class="nav-item active" onclick="navigate('home')" id="nav-home">
+      <svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      <span id="nav-home-label">کور</span>
+    </button>
+    <button class="nav-item" onclick="navigate('typing')" id="nav-typing">
+      <svg fill="currentColor" viewBox="0 0 24 24"><path d="M20 5H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 5H5v-2h2v2zm0-3H5v-2h2v2zm0-3H5V8h2v2zm9 6H8v-2h8v2zm0-3h-2v-2h2v2zm0-3h-2V8h2v2zm3 6h-2v-2h2v2zm0-3h-2v-2h2v2zm0-3h-2V8h2v2z"/></svg>
+      <span id="nav-typing-label">ټایپنګ</span>
+    </button>
+    <button class="nav-item" onclick="navigate('quiz-main')" id="nav-quiz">
+      <svg fill="currentColor" viewBox="0 0 24 24"><path d="M11.5 2C6.81 2 3 5.81 3 10.5S6.81 19 11.5 19h.5v3c4.86-2.34 8-7 8-11.5C20 5.81 16.19 2 11.5 2zm1 14.5h-2v-2h2v2zm0-4h-2c0-3.25 3-3 3-5 0-1.1-.9-2-2-2s-2 .9-2 2h-2c0-2.21 1.79-4 4-4s4 1.79 4 4c0 2.5-3 2.75-3 5z"/></svg>
+      <span id="nav-quiz-label">کوئز</span>
+    </button>
+    <button class="nav-item" onclick="navigate('about')" id="nav-about">
+      <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+      <span id="nav-about-label">معلومات</span>
+    </button>
+  </div>
+
+</div>
+
+<script>
+// LANGUAGE DATA
+const lang = {
+  ps: {
+    welcome: 'ښه راغلاست!',
+    welcomeSub: 'د کمپیوټر زده کړه - بیسک څخه ایډوانس پورې',
+    courses: 'کورسونه', stat1: 'کورسونه', stat2: 'لیسنونه',
+    stat3: 'ژبې', stat4: 'آفلاین',
+    hw: 'هارډویر', sw: 'سافټویر', net: 'نیټورک', off: 'MS آفس',
+    navHome: 'کور', navTyping: 'ټایپنګ', navQuiz: 'کوئز', navAbout: 'معلومات',
+    back: 'شاته', startQuiz: 'کوئز شروع کړئ',
+    typingTitle: 'ټایپنګ ټیپس', typingSub: 'پښتو، دری او انګلیسي ټایپنګ زده کړئ',
+    psTyping: 'پښتو ټایپنګ', psTypingSub: 'د پښتو کیبورډ کارول',
+    drTyping: 'دری ټایپنګ', drTypingSub: 'د دری کیبورډ کارول',
+    quizTitle: 'کوئز', nextBtn: 'بل لیسن', retryBtn: 'بیا هڅه وکړئ',
+    passMsg: 'ماشا الله! تاسو بریالي شوئ', failMsg: 'بیا هڅه وکړئ'
+  },
+  dr: {
+    welcome: 'خوش آمدید!',
+    welcomeSub: 'یادگیری کامپیوتر - از مبتدی تا پیشرفته',
+    courses: 'دوره‌ها', stat1: 'دوره‌ها', stat2: 'درس‌ها',
+    stat3: 'زبان‌ها', stat4: 'آفلاین',
+    hw: 'سخت‌افزار', sw: 'نرم‌افزار', net: 'شبکه', off: 'آفیس',
+    navHome: 'خانه', navTyping: 'تایپینگ', navQuiz: 'مسابقه', navAbout: 'معلومات',
+    back: 'برگشت', startQuiz: 'شروع مسابقه',
+    typingTitle: 'نکات تایپینگ', typingSub: 'تایپینگ پشتو، دری و انگلیسی',
+    psTyping: 'تایپینگ پشتو', psTypingSub: 'استفاده از کیبورد پشتو',
+    drTyping: 'تایپینگ دری', drTypingSub: 'استفاده از کیبورد دری',
+    quizTitle: 'مسابقه', nextBtn: 'درس بعدی', retryBtn: 'دوباره تلاش',
+    passMsg: 'ماشاالله! موفق شدید', failMsg: 'دوباره تلاش کنید'
+  },
+  en: {
+    welcome: 'Welcome!',
+    welcomeSub: 'Computer Learning - Basic to Advanced',
+    courses: 'Courses', stat1: 'Courses', stat2: 'Lessons',
+    stat3: 'Languages', stat4: 'Offline',
+    hw: 'Hardware', sw: 'Software', net: 'Network', off: 'MS Office',
+    navHome: 'Home', navTyping: 'Typing', navQuiz: 'Quiz', navAbout: 'About',
+    back: 'Back', startQuiz: 'Start Quiz',
+    typingTitle: 'Typing Tips', typingSub: 'Learn Pashto, Dari & English typing',
+    psTyping: 'Pashto Typing', psTypingSub: 'Using Pashto keyboard',
+    drTyping: 'Dari Typing', drTypingSub: 'Using Dari keyboard',
+    quizTitle: 'Quiz', nextBtn: 'Next Lesson', retryBtn: 'Try Again',
+    passMsg: 'Excellent! You passed!', failMsg: 'Try again!'
+  }
+};
+
+let currentLang = 'ps';
+let currentCourse = 'hardware';
+let currentLesson = 0;
+let currentQuestion = 0;
+let score = 0;
+let quizAnswers = [];
+
+// COURSE DATA
+const courses = {
+  hardware: {
+    ps: 'هارډویر کورس', dr: 'دوره سخت‌افزار', en: 'Hardware Course',
+    lessons: [
+      {
+        ps: { title: 'د کمپیوټر بیسک', content: 'کمپیوټر یو الکترونیکي وسیله ده چې معلومات پروسس کوي. دا د ان پټ، پروسیسنګ، آوټ پټ او ذخیره کولو برخو لري.', emoji: '💻' },
+        dr: { title: 'اصول کامپیوتر', content: 'کامپیوتر یک وسیله الکترونیکی است که اطلاعات را پردازش می‌کند.', emoji: '💻' },
+        en: { title: 'Computer Basics', content: 'A computer is an electronic device that processes information. It has input, processing, output and storage components.', emoji: '💻' },
+        free: true
+      },
+      {
+        ps: { title: 'CPU - پروسیسر', content: 'CPU (Central Processing Unit) د کمپیوټر مغز دی. دا ټول حسابونه او منطقي کارونه ترسره کوي. Intel او AMD مشهور CPU جوړونکي دي.', emoji: '🔲' },
+        dr: { title: 'CPU - پردازنده', content: 'CPU مغز کامپیوتر است. تمام محاسبات را انجام می‌دهد.', emoji: '🔲' },
+        en: { title: 'CPU - Processor', content: 'CPU is the brain of computer. It performs all calculations. Intel and AMD are popular CPU makers.', emoji: '🔲' },
+        free: true
+      },
+      {
+        ps: { title: 'RAM - حافظه', content: 'RAM (Random Access Memory) لنډمهاله حافظه ده. کمپیوټر یې د کار پر وخت کاروي. زیاته RAM = ګړندي کمپیوټر.', emoji: '🟩' },
+        dr: { title: 'RAM - حافظه', content: 'RAM حافظه موقت است. هر چه RAM بیشتر = کامپیوتر سریع‌تر.', emoji: '🟩' },
+        en: { title: 'RAM - Memory', content: 'RAM is temporary memory used while computer works. More RAM = Faster computer.', emoji: '🟩' },
+        free: false
+      },
+      {
+        ps: { title: 'هارډ ډیسک', content: 'هارډ ډیسک دایمي ذخیره کولو وسیله ده. ستاسو ټول فایلونه، سافټویرونه او ویندوز پکې ذخیره وي.', emoji: '💿' },
+        dr: { title: 'هارد دیسک', content: 'هارد دیسک برای ذخیره دائمی اطلاعات است.', emoji: '💿' },
+        en: { title: 'Hard Disk', content: 'Hard disk permanently stores all your files, software and Windows.', emoji: '💿' },
+        free: false
+      }
+    ]
+  },
+  software: {
+    ps: 'سافټویر کورس', dr: 'دوره نرم‌افزار', en: 'Software Course',
+    lessons: [
+      {
+        ps: { title: 'سافټویر ډولونه', content: 'سافټویر دوه ډوله دي: سیسټم سافټویر (لکه ویندوز) او اپلیکیشن سافټویر (لکه ورډ، کروم).', emoji: '💾' },
+        dr: { title: 'انواع نرم‌افزار', content: 'نرم‌افزار دو نوع است: سیستمی و کاربردی.', emoji: '💾' },
+        en: { title: 'Types of Software', content: 'Software is of two types: System software (like Windows) and Application software (like Word, Chrome).', emoji: '💾' },
+        free: true
+      },
+      {
+        ps: { title: 'ویندوز نصبول', content: 'ویندوز د کمپیوټر مشهور عملیاتي سیسټم دی. د نصبولو لپاره بوټ ایبل USB ته اړتیا ده.', emoji: '🪟' },
+        dr: { title: 'نصب ویندوز', content: 'ویندوز سیستم عامل معروف است. برای نصب به USB بوتیبل نیاز است.', emoji: '🪟' },
+        en: { title: 'Installing Windows', content: 'Windows is a popular OS. You need a bootable USB to install it.', emoji: '🪟' },
+        free: true
+      }
+    ]
+  },
+  network: {
+    ps: 'نیټورک کورس', dr: 'دوره شبکه', en: 'Network Course',
+    lessons: [
+      {
+        ps: { title: 'نیټورک څه شی دی؟', content: 'نیټورک د کمپیوټرونو اتصال دی چې معلومات شریک کوي. LAN، WAN او WiFi د نیټورک ډولونه دي.', emoji: '🌐' },
+        dr: { title: 'شبکه چیست؟', content: 'شبکه اتصال کامپیوترها برای اشتراک اطلاعات است.', emoji: '🌐' },
+        en: { title: 'What is Network?', content: 'Network is connection of computers to share information. LAN, WAN and WiFi are network types.', emoji: '🌐' },
+        free: true
+      }
+    ]
+  },
+  office: {
+    ps: 'MS آفس کورس', dr: 'دوره آفیس', en: 'MS Office Course',
+    lessons: [
+      {
+        ps: { title: 'Microsoft Word', content: 'ورډ د لیکنې سافټویر دی. تاسو پکې ډاکومینټونه جوړولی شئ، فارمیټ کولی شئ او چاپ کولی شئ. د Home، Insert، Page Layout ټبونه مهم دي.', emoji: '📝' },
+        dr: { title: 'Microsoft Word', content: 'ورد برای نوشتن اسناد است. می‌توانید اسناد ایجاد، قالب‌بندی و چاپ کنید. تب‌های Home، Insert، Page Layout مهم هستند.', emoji: '📝' },
+        en: { title: 'Microsoft Word', content: 'Word is document software. You can create, format and print documents. Home, Insert, Page Layout tabs are important.', emoji: '📝' },
+        free: true
+      },
+      {
+        ps: { title: 'Microsoft Excel', content: 'Excel د حساب کتاب سافټویر دی. پکې جدولونه، ګراف او حسابونه کولی شئ. SUM، AVERAGE، IF فارمولونه مهم دي.', emoji: '📊' },
+        dr: { title: 'Microsoft Excel', content: 'اکسل برای جدول‌ها و حسابداری است. فرمول‌های SUM، AVERAGE، IF مهم هستند.', emoji: '📊' },
+        en: { title: 'Microsoft Excel', content: 'Excel is spreadsheet software. SUM, AVERAGE, IF formulas are important for calculations and data analysis.', emoji: '📊' },
+        free: false
+      },
+      {
+        ps: { title: 'Microsoft PowerPoint', content: 'PowerPoint د پریزینټیشن جوړولو سافټویر دی. پکې سلایډونه جوړولی شئ، انیمیشنونه او ګرافیکونه اضافه کولی شئ.', emoji: '📽️' },
+        dr: { title: 'Microsoft PowerPoint', content: 'پاورپوینت برای ایجاد ارائه است. می‌توانید اسلایدها، انیمیشن‌ها و گرافیک‌ها اضافه کنید.', emoji: '📽️' },
+        en: { title: 'Microsoft PowerPoint', content: 'PowerPoint is presentation software. You can create slides with animations, graphics and transitions.', emoji: '📽️' },
+        free: false
+      }
+    ]
+  },
+  windows: {
+    ps: 'ویندوز کورس', dr: 'دوره ویندوز', en: 'Windows Course',
+    lessons: [
+      {
+        ps: { title: 'ویندوز بیسک', content: 'ویندوز د مایکروسافت عملیاتي سیسټم دی. Desktop، Taskbar، Start Menu، File Explorer مهمې برخې دي.', emoji: '🪟' },
+        dr: { title: 'اصول ویندوز', content: 'ویندوز سیستم عامل مایکروسافت است. Desktop، Taskbar، Start Menu، File Explorer اجزای مهم هستند.', emoji: '🪟' },
+        en: { title: 'Windows Basics', content: 'Windows is Microsoft OS. Desktop, Taskbar, Start Menu, File Explorer are important parts to learn.', emoji: '🪟' },
+        free: true
+      },
+      {
+        ps: { title: 'د فایل مدیریت', content: 'File Explorer کې فایلونه او فولډرونه مدیریت کړئ. Cut، Copy، Paste، Delete، Rename مهم کمانډونه دي. Ctrl+C، Ctrl+V شارټ کټونه دي.', emoji: '📁' },
+        dr: { title: 'مدیریت فایل', content: 'در File Explorer فایل‌ها و پوشه‌ها را مدیریت کنید. Cut، Copy، Paste، Delete، Rename دستورهای مهم هستند.', emoji: '📁' },
+        en: { title: 'File Management', content: 'Manage files and folders in File Explorer. Cut, Copy, Paste, Delete, Rename are important. Ctrl+C, Ctrl+V are shortcuts.', emoji: '📁' },
+        free: true
+      },
+      {
+        ps: { title: 'ویندوز شارټ کټونه', content: 'Ctrl+C=کاپي، Ctrl+V=پیسټ، Ctrl+Z=انډو، Alt+F4=بندول، Win+D=ډیسکټاپ، Win+L=لاک، Ctrl+Alt+Del=ټاسک مینیجر', emoji: '⌨️' },
+        dr: { title: 'میانبرهای ویندوز', content: 'Ctrl+C=کپی، Ctrl+V=پیست، Ctrl+Z=برگشت، Alt+F4=بستن، Win+D=دسکتاپ، Win+L=قفل، Ctrl+Alt+Del=مدیریت وظایف', emoji: '⌨️' },
+        en: { title: 'Windows Shortcuts', content: 'Ctrl+C=Copy, Ctrl+V=Paste, Ctrl+Z=Undo, Alt+F4=Close, Win+D=Desktop, Win+L=Lock, Ctrl+Alt+Del=Task Manager', emoji: '⌨️' },
+        free: false
+      }
+    ]
+  },
+  internet: {
+    ps: 'انټرنیټ کورس', dr: 'دوره اینترنت', en: 'Internet Course',
+    lessons: [
+      {
+        ps: { title: 'انټرنیټ بیسک', content: 'انټرنیټ د نړۍ ترټولو لوی نیټورک دی. د براوزر لکه Chrome، Firefox لپاره کارول کیږي. URL، HTTP، HTTPS مهم اصطلاحات دي.', emoji: '🌐' },
+        dr: { title: 'اصول اینترنت', content: 'اینترنت بزرگترین شبکه جهان است. از مرورگرهایی مثل Chrome، Firefox استفاده می‌شود. URL، HTTP، HTTPS اصطلاحات مهم هستند.', emoji: '🌐' },
+        en: { title: 'Internet Basics', content: 'Internet is the worlds largest network. Browsers like Chrome, Firefox are used. URL, HTTP, HTTPS are important terms.', emoji: '🌐' },
+        free: true
+      },
+      {
+        ps: { title: 'ایمیل کارول', content: 'Gmail، Yahoo د مشهورو ایمیل سرویسونو دي. Inbox، Compose، Send، Reply، Forward د ایمیل مهم برخې دي. د قوي پاسورډ کارول مهم دي.', emoji: '📧' },
+        dr: { title: 'استفاده از ایمیل', content: 'Gmail، Yahoo سرویس‌های ایمیل معروف هستند. Inbox، Compose، Send، Reply، Forward بخش‌های مهم ایمیل هستند.', emoji: '📧' },
+        en: { title: 'Using Email', content: 'Gmail, Yahoo are popular email services. Inbox, Compose, Send, Reply, Forward are important email parts. Use strong passwords.', emoji: '📧' },
+        free: true
+      },
+      {
+        ps: { title: 'آنلاین امنیت', content: 'انټرنیټ کارولو پرمهال خوندي اوسئ: قوي پاسورډ وکاروئ، د ناپیژندل شوو لینکونو کلیک مه کوئ، VPN وکاروئ، خپل معلومات شریک مه کوئ.', emoji: '🔒' },
+        dr: { title: 'امنیت آنلاین', content: 'هنگام استفاده از اینترنت امن باشید: از رمز قوی استفاده کنید، روی لینک‌های ناشناس کلیک نکنید، VPN استفاده کنید.', emoji: '🔒' },
+        en: { title: 'Online Safety', content: 'Stay safe online: Use strong passwords, Do not click unknown links, Use VPN, Do not share personal information with strangers.', emoji: '🔒' },
+        free: false
+      }
+    ]
+  }
+};
+
+// QUIZ DATA
+const quizData = [
+  { ps: 'CPU د کمپیوټر کوم برخه ده؟', dr: 'CPU کدام قسمت کامپیوتر است؟', en: 'What is CPU of computer?',
+    options: { ps: ['مغز', 'زړه', 'سترګه', 'لاس'], dr: ['مغز', 'قلب', 'چشم', 'دست'], en: ['Brain', 'Heart', 'Eye', 'Hand'] },
+    correct: 0 },
+  { ps: 'RAM د کومې ډول حافظه ده؟', dr: 'RAM چه نوع حافظه است؟', en: 'What type of memory is RAM?',
+    options: { ps: ['دایمي', 'لنډمهاله', 'خارجي', 'آپتیکل'], dr: ['دائمی', 'موقت', 'خارجی', 'نوری'], en: ['Permanent', 'Temporary', 'External', 'Optical'] },
+    correct: 1 },
+  { ps: 'هارډ ډیسک د کومې کار لپاره ده؟', dr: 'هارد دیسک برای چیست؟', en: 'What is hard disk for?',
+    options: { ps: ['پروسیسنګ', 'ذخیره کول', 'پرینټ کول', 'سکین کول'], dr: ['پردازش', 'ذخیره', 'چاپ', 'اسکن'], en: ['Processing', 'Storage', 'Printing', 'Scanning'] },
+    correct: 1 },
+  { ps: 'ویندوز کوم ډول سافټویر دی؟', dr: 'ویندوز چه نوع نرم‌افزاری است؟', en: 'What type of software is Windows?',
+    options: { ps: ['اپلیکیشن', 'عملیاتي سیسټم', 'انټي ویروس', 'براوزر'], dr: ['کاربردی', 'سیستم عامل', 'آنتی‌ویروس', 'مرورگر'], en: ['Application', 'Operating System', 'Antivirus', 'Browser'] },
+    correct: 1 },
+  { ps: 'LAN د کومې لنډیز دی؟', dr: 'LAN مخفف چیست؟', en: 'What does LAN stand for?',
+    options: { ps: ['Local Area Network', 'Large Area Network', 'Long Area Network', 'Linked Area Network'], dr: ['Local Area Network', 'Large Area Network', 'Long Area Network', 'Linked Area Network'], en: ['Local Area Network', 'Large Area Network', 'Long Area Network', 'Linked Area Network'] },
+    correct: 0 },
+  { ps: 'CPU بل کوم نوم لري؟', dr: 'CPU نام دیگرش چیست؟', en: 'CPU is also called?',
+    options: { ps: ['پروسیسر', 'مانیټر', 'کیبورډ', 'ماوس'], dr: ['پردازنده', 'مانیتور', 'صفحه‌کلید', 'ماوس'], en: ['Processor', 'Monitor', 'Keyboard', 'Mouse'] },
+    correct: 0 },
+  { ps: 'Microsoft Word د کوم کار لپاره ده؟', dr: 'مایکروسافت ورد برای چیست؟', en: 'Microsoft Word is used for?',
+    options: { ps: ['لیکنه', 'ویډیو جوړول', 'ایمیل', 'ګیم'], dr: ['نوشتن', 'ساخت ویدیو', 'ایمیل', 'بازی'], en: ['Writing', 'Video editing', 'Email', 'Gaming'] },
+    correct: 0 },
+  { ps: 'USB د کومې لنډیز دی؟', dr: 'USB مخفف چیست؟', en: 'USB stands for?',
+    options: { ps: ['Universal Serial Bus', 'United Serial Bus', 'Universal System Bus', 'Unique Serial Bus'], dr: ['Universal Serial Bus', 'United Serial Bus', 'Universal System Bus', 'Unique Serial Bus'], en: ['Universal Serial Bus', 'United Serial Bus', 'Universal System Bus', 'Unique Serial Bus'] },
+    correct: 0 },
+  { ps: 'د نیټورک لپاره کوم وسیله کارول کیږي؟', dr: 'برای شبکه کدام وسیله استفاده می‌شود؟', en: 'Which device is used for network?',
+    options: { ps: ['روټر', 'پرینټر', 'سکینر', 'ویب کیم'], dr: ['روتر', 'چاپگر', 'اسکنر', 'وب‌کم'], en: ['Router', 'Printer', 'Scanner', 'Webcam'] },
+    correct: 0 },
+  { ps: 'Excel د کوم کار لپاره کارول کیږي؟', dr: 'اکسل برای چه کاری استفاده می‌شود؟', en: 'Excel is used for?',
+    options: { ps: ['جدولونه', 'ویډیو', 'موسیقي', 'ګرافیک'], dr: ['جدول‌ها', 'ویدیو', 'موسیقی', 'گرافیک'], en: ['Spreadsheets', 'Video', 'Music', 'Graphics'] },
+    correct: 0 }
+];
+
+function setLang(l) {
+  currentLang = l;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  updateTexts();
+}
+
+function updateTexts() {
+  const l = lang[currentLang];
+  document.getElementById('welcome-title').textContent = l.welcome;
+  document.getElementById('welcome-sub').textContent = l.welcomeSub;
+  document.getElementById('courses-title').textContent = l.courses;
+  document.getElementById('stat1-label').textContent = l.stat1;
+  document.getElementById('stat2-label').textContent = l.stat2;
+  document.getElementById('stat3-label').textContent = l.stat3;
+  document.getElementById('stat4-label').textContent = l.stat4;
+  document.getElementById('hw-title').textContent = l.hw;
+  document.getElementById('sw-title').textContent = l.sw;
+  document.getElementById('net-title').textContent = l.net;
+  document.getElementById('off-title').textContent = l.off;
+  document.getElementById('nav-home-label').textContent = l.navHome;
+  document.getElementById('nav-typing-label').textContent = l.navTyping;
+  document.getElementById('nav-quiz-label').textContent = l.navQuiz;
+  document.getElementById('nav-about-label').textContent = l.navAbout;
+  document.getElementById('back-text').textContent = l.back;
+  document.getElementById('back-text2').textContent = l.back;
+  document.getElementById('quiz-btn-text').textContent = l.startQuiz;
+  document.getElementById('typing-title').textContent = l.typingTitle;
+  document.getElementById('typing-sub').textContent = l.typingSub;
+  document.getElementById('ps-typing').textContent = l.psTyping;
+  document.getElementById('ps-typing-sub').textContent = l.psTypingSub;
+  document.getElementById('dr-typing').textContent = l.drTyping;
+  document.getElementById('dr-typing-sub').textContent = l.drTypingSub;
+  document.getElementById('next-btn-text').textContent = l.nextBtn;
+  document.getElementById('retry-text').textContent = l.retryBtn;
+}
+
+function navigate(screen) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  if(screen === 'home') {
+    document.getElementById('home-screen').classList.add('active');
+    document.getElementById('nav-home').classList.add('active');
+  } else if(screen === 'typing') {
+    document.getElementById('typing-screen').classList.add('active');
+    document.getElementById('nav-typing').classList.add('active');
+  } else if(screen === 'quiz-main') {
+    startMainQuiz();
+    document.getElementById('nav-quiz').classList.add('active');
+  } else if(screen === 'about') {
+    document.getElementById('about-screen').classList.add('active');
+    document.getElementById('nav-about').classList.add('active');
+  }
+}
+
+function showCourses(course) {
+  currentCourse = course;
+  const courseData = courses[course];
+  const title = courseData[currentLang] || courseData.en;
+  document.getElementById('course-screen-title').textContent = title;
+
+  const list = document.getElementById('lessons-list');
+  list.innerHTML = '';
+
+  const lessons = courseData.lessons;
+  lessons.forEach((lesson, i) => {
+    const l = lesson[currentLang] || lesson.en;
+    const completed = localStorage.getItem(`lesson_${course}_${i}`) === 'done';
+    const card = document.createElement('div');
+    card.className = 'lesson-card';
+    card.onclick = () => showLesson(i);
+    card.innerHTML = `
+      <div class="lesson-num">${i+1}</div>
+      <div class="lesson-info">
+        <h4>${l.title}</h4>
+        <p>${lesson.free ? '🆓 Free' : '🔒 Quiz Pass'}</p>
+      </div>
+      <span class="lesson-badge ${completed ? 'badge-done' : lesson.free ? 'badge-free' : 'badge-locked'}">
+        ${completed ? '✓' : lesson.free ? 'Free' : '🔒'}
+      </span>`;
+    list.appendChild(card);
+  });
+
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('courses-screen').classList.add('active');
+}
+
+function showLesson(index) {
+  currentLesson = index;
+  const lesson = courses[currentCourse].lessons[index];
+  const l = lesson[currentLang] || lesson.en;
+
+  document.getElementById('lesson-detail-content').innerHTML = `
+    <div class="lesson-content">
+      <h3>${l.title}</h3>
+      <div class="lesson-image">${lesson.ps.emoji}</div>
+      <p>${l.content}</p>
+      <div class="highlight-box">💡 ${currentLang === 'ps' ? 'مهمه نکته' : currentLang === 'dr' ? 'نکته مهم' : 'Key Point'}: ${l.title}</div>
+    </div>`;
+
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('lesson-screen').classList.add('active');
+}
+
+function goBack() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('home-screen').classList.add('active');
+  document.getElementById('nav-home').classList.add('active');
+}
+
+function backToLessons() {
+  showCourses(currentCourse);
+}
+
+function showQuiz() {
+  currentQuestion = 0; score = 0;
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('quiz-screen').classList.add('active');
+  renderQuestion();
+}
+
+function startMainQuiz() {
+  currentQuestion = 0; score = 0;
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('quiz-screen').classList.add('active');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = quizData[currentQuestion];
+  const qText = q[currentLang] || q.en;
+  const opts = q.options[currentLang] || q.options.en;
+  const letters = ['A','B','C','D'];
+
+  document.getElementById('quiz-title').textContent = lang[currentLang].quizTitle;
+  document.getElementById('quiz-counter').textContent = `${currentQuestion+1} / 10`;
+  document.getElementById('quiz-progress').style.width = `${(currentQuestion+1)*10}%`;
+
+  document.getElementById('quiz-content').innerHTML = `
+    <div class="question-card fade-in">
+      <div class="question-text">${qText}</div>
+      ${opts.map((opt,i) => `
+        <button class="option-btn" onclick="selectAnswer(${i})">
+          <span class="option-letter">${letters[i]}</span>
+          ${opt}
+        </button>`).join('')}
+    </div>`;
+}
+
+function selectAnswer(selected) {
+  const q = quizData[currentQuestion];
+  const buttons = document.querySelectorAll('.option-btn');
+  buttons.forEach((btn, i) => {
+    btn.disabled = true;
+    if(i === q.correct) btn.classList.add('correct');
+    else if(i === selected && selected !== q.correct) btn.classList.add('wrong');
+  });
+
+  if(selected === q.correct) score++;
+
+  setTimeout(() => {
+    currentQuestion++;
+    if(currentQuestion < 10) renderQuestion();
+    else showResult();
+  }, 1200);
+}
+
+function showResult() {
+  const passed = score >= 7;
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('result-screen').classList.add('active');
+
+  document.getElementById('result-emoji').textContent = passed ? '🎉' : '😔';
+  document.getElementById('result-score').textContent = `${score}/10`;
+  document.getElementById('result-status').textContent = passed ?
+    (currentLang === 'ps' ? 'پاس! 🎊' : currentLang === 'dr' ? 'قبول! 🎊' : 'PASSED! 🎊') :
+    (currentLang === 'ps' ? 'فیل ❌' : currentLang === 'dr' ? 'رد ❌' : 'FAILED ❌');
+  document.getElementById('result-status').className = `result-status ${passed ? 'pass' : 'fail'}`;
+  document.getElementById('result-msg').textContent = passed ? lang[currentLang].passMsg : lang[currentLang].failMsg;
+
+  if(passed) {
+    localStorage.setItem(`lesson_${currentCourse}_${currentLesson}`, 'done');
+  }
+}
+
+function retryQuiz() { showQuiz(); }
+
+function nextLesson() {
+  const nextIndex = currentLesson + 1;
+  const lessonsList = courses[currentCourse]?.lessons;
+  if(lessonsList && nextIndex < lessonsList.length) {
+    showLesson(nextIndex);
+  } else {
+    navigate('home');
+  }
+}
+
+function showTypingLesson(lang) {
+  const content = {
+    pashto: { title: 'پښتو ټایپنګ', tips: ['د پښتو لپاره Pashto Keyboard نصب کړئ', 'Win + Space د ژبې بدلولو لپاره', 'د تمرین لپاره هره ورځ ۱۵ دقیقې وقت وګوروئ'] },
+    dari: { title: 'دری ټایپنګ', tips: ['د دری لپاره Dari Keyboard نصب کړئ', 'Alt + Shift د ژبې بدلولو لپاره', 'د فارسي کیبورډ لیوت زده کړئ'] },
+    english: { title: 'English Typing', tips: ['Home row: ASDF JKL;', 'Practice 15 mins daily', 'Use all 10 fingers'] }
+  };
+  const c = content[lang];
+  alert(`${c.title}\n\n${c.tips.join('\n\n')}`);
+}
+</script>
+</body>
+</html>
